@@ -29,16 +29,17 @@ def handle_client(client, client_address):
             msg = (msg).decode("utf8")
             data = json.loads(msg)
             
-            print(str(client_address)+": "+str(data))
+            print(str(client_address)+": "+str(data['left_click']))
+            print(bool(data['left_click']))
 
             pyautogui.moveTo(int(data['x']), int(data['y']))
-            
-            '''pyautogui.moveTo(data["x"], data["y"])
 
-            if(bool(data['left_click'])):
+            if(data['left_click'] == 'True'):
                 pyautogui.click(button = "left")
-            if(bool(data['right_click'])):
+                
+            '''if(bool(data['right_click'])):
                 pyautogui.click(button= "right")
+                
             if(data['key'] != 'false'):
                 pyautogui.press(data['key'])'''
                 
