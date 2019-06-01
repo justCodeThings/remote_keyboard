@@ -16,6 +16,8 @@ namespace client
         Boolean right_click;
         String key;
 
+        Stopwatch watch = new Stopwatch();
+
         // The port number for the remote device.  
         private const int port = 11002;
 
@@ -73,11 +75,6 @@ namespace client
             {
                 right_click = true;
             }
-            else
-            {
-                left_click = false; 
-                right_click = false;
-            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -85,6 +82,8 @@ namespace client
             key = "false";
             StartClient(x, y, left_click, right_click, key);
             this.textBox1.Text = (x.ToString()+ y.ToString()+ left_click.ToString()+ right_click.ToString()+ key.ToString());
+            left_click = false;
+            right_click = false;
         }
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
