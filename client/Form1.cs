@@ -16,7 +16,8 @@ namespace client
         Boolean right_click;
         String key;
 
-        Stopwatch watch = new Stopwatch();
+        Stopwatch left_click_watch = new Stopwatch();
+        Stopwatch right_click_watch = new Stopwatch();
 
         // The port number for the remote device.  
         private const int port = 11002;
@@ -70,10 +71,13 @@ namespace client
             if(e.Button == MouseButtons.Left)
             {
                 left_click = true;
+                left_click_watch = Stopwatch.StartNew();
+                
             }
             if(e.Button == MouseButtons.Right)
             {
                 right_click = true;
+                right_click_watch = Stopwatch.StartNew();
             }
         }
 
@@ -82,14 +86,21 @@ namespace client
             key = "false";
             StartClient(x, y, left_click, right_click, key);
             this.textBox1.Text = (x.ToString()+ y.ToString()+ left_click.ToString()+ right_click.ToString()+ key.ToString());
-            left_click = false;
-            right_click = false;
+            if (left_click_watch.ElapsedMilliseconds > 250)
+            {
+                left_click = false;
+            }
+            if (right_click_watch.ElapsedMilliseconds > 250)
+            {
+                right_click = false;
+            }
         }
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             // Release the socket.  
             client.Shutdown(SocketShutdown.Both);
             client.Close();
+            
         }
 
         public static void StartClient(int x, int y, Boolean left_click, Boolean right_click, String key)
