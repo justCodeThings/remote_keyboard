@@ -37,10 +37,10 @@ def handle_client(client, client_address):
             if(data['left_click'] == 'True'):
                 pyautogui.click(button = "left")
                 
-            '''if(bool(data['right_click'])):
+            if(data['right_click'] == 'True'):
                 pyautogui.click(button= "right")
                 
-            if(data['key'] != 'false'):
+            '''if(data['key'] != 'false'):
                 pyautogui.press(data['key'])'''
                 
         except Exception as e:
