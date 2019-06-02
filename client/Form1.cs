@@ -15,6 +15,8 @@ namespace client
         Boolean left_click;
         Boolean right_click;
         String key;
+        Boolean drag;
+        Boolean mouse_up = true;
 
         Stopwatch left_click_watch = new Stopwatch();
         Stopwatch right_click_watch = new Stopwatch();
@@ -80,20 +82,36 @@ namespace client
                 right_click_watch = Stopwatch.StartNew();
             }
         }
+        private void Form1_MouseUp(object sender, MouseEventArgs e)
+        {
+            drag = false;
+            mouse_up = true;
+        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             key = "false";
-            StartClient(x, y, left_click, right_click, key);
+            StartClient(x, y, left_click, right_click, drag, key);
             this.textBox1.Text = (x.ToString()+ y.ToString()+ left_click.ToString()+ right_click.ToString()+ key.ToString());
+
+            // Determine whether the mouse is single clicked or drag
             if (left_click_watch.ElapsedMilliseconds > 250)
             {
                 left_click = false;
+                if (!mouse_up)
+                {
+                    left_click_watch.Stop();
+                    drag = true;
+                }
             }
+
             if (right_click_watch.ElapsedMilliseconds > 250)
             {
                 right_click = false;
+                right_click_watch.Stop();
             }
+                    
+                    
         }
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -103,20 +121,25 @@ namespace client
             
         }
 
-        public static void StartClient(int x, int y, Boolean left_click, Boolean right_click, String key)
+        public static void StartClient(int x, int y, Boolean left_click, Boolean right_click, Boolean drag, String key)
         {
             // Connect to a remote device.  
             try
             {
                 
                 // Send test data to the remote device.  
-                Send(client, Newtonsoft.Json.JsonConvert.SerializeObject(new { x = x.ToString(), y = y.ToString(), left_click = left_click.ToString(), right_click = right_click.ToString(), key = key }));
+                Send(client, Newtonsoft.Json.JsonConvert.SerializeObject(new { x = x.ToString(), y = y.ToString(), left_click = left_click.ToString(), right_click = right_click.ToString(), drag = drag.ToString(), key = key }));
                 
                 sendDone.WaitOne();
 
                 // Receive the response from the remote device.  
-                /*Receive(client);
-                receiveDone.WaitOne();*/
+                try
+                {
+                    Receive(client);
+                }
+                catch { }
+
+                //receiveDone.WaitOne();
 
                 // Write the response to the console.  
                 Console.WriteLine("Response received : {0}", response);
@@ -235,7 +258,6 @@ namespace client
                 Console.WriteLine(e.ToString());
             }
         }
-
     }
     // State object for receiving data from remote device.  
     public class StateObject
