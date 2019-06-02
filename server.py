@@ -18,8 +18,8 @@ def accept_incoming_connections():
         client, client_address = server.accept()
         addresses[client_address] = client_address
         clients[client] = client
-        print("client has connected." )
-        #broadcast(bytes("%s has connected."%(client_address), "utf8"))
+        print("{} has connected.".format(client_address))
+        broadcast(bytes("{} has connected.".format(client_address), "utf8"))
         Thread(target=handle_client, args=(client, client_address)).start()
 
 def handle_client(client, client_address):
@@ -53,8 +53,8 @@ def delete_client(client, client_address):
         client.close()
         del addresses[client_address]
         del clients[client]
-        #broadcast(bytes("%s has disconnected."%(client_address), "utf8"))
-        print("client has disconnected.")
+        broadcast(bytes("{} has disconnected.".format(client_address), "utf8"))
+        print("{} has disconnected.".format(client_address))
     except Exception:
         pass
 
