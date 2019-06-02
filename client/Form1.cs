@@ -9,10 +9,7 @@ using System.Diagnostics;
 namespace client
 {
     public partial class Form1 : Form
-    {
-    
-//==========CONSTANTS==========
-    
+    {    
         int x;
         int y;
         Boolean left_click;
@@ -39,17 +36,12 @@ namespace client
         public static String response = String.Empty;
 
         // Establish the remote endpoint for the socket.  
-        // The name of the   
-        // remote device is "host.contoso.com".  
-        //public static IPHostEntry ipHostInfo = Dns.GetHostEntry(String.Empty);
         public static IPAddress ipAddress = IPAddress.Parse("192.168.0.12");
         public static IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
         // Create a TCP/IP socket.  
         public static Socket client = new Socket(remoteEP.AddressFamily,
             SocketType.Stream, ProtocolType.Tcp);
-
-//==========FORM FUNCTIONS==========
 
         public Form1()
         {
@@ -113,26 +105,20 @@ namespace client
             {
                 right_click = false;
                 right_click_watch.Stop();
-            }
-                    
-                    
+            }       
         }
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             // Release the socket.  
             client.Shutdown(SocketShutdown.Both);
             client.Close();
-            
         }
-
-//==========SOCKET FUNCTIONS==========
 
         public static void StartClient(int x, int y, Boolean left_click, Boolean right_click, Boolean drag, String key)
         {
             // Connect to a remote device.  
             try
             {
-                
                 // Send test data to the remote device.  
                 Send(client, Newtonsoft.Json.JsonConvert.SerializeObject(new { x = x.ToString(), y = y.ToString(), left_click = left_click.ToString(), right_click = right_click.ToString(), drag = drag.ToString(), key = key }));
                 
