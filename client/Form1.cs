@@ -10,6 +10,9 @@ namespace client
 {
     public partial class Form1 : Form
     {
+    
+//==========CONSTANTS==========
+    
         int x;
         int y;
         Boolean left_click;
@@ -46,6 +49,7 @@ namespace client
         public static Socket client = new Socket(remoteEP.AddressFamily,
             SocketType.Stream, ProtocolType.Tcp);
 
+//==========FORM FUNCTIONS==========
 
         public Form1()
         {
@@ -121,6 +125,8 @@ namespace client
             
         }
 
+//==========SOCKET FUNCTIONS==========
+
         public static void StartClient(int x, int y, Boolean left_click, Boolean right_click, Boolean drag, String key)
         {
             // Connect to a remote device.  
@@ -133,12 +139,9 @@ namespace client
                 sendDone.WaitOne();
 
                 // Receive the response from the remote device.  
-                try
-                {
-                    Receive(client);
-                }
-                catch { }
-
+                
+                //Receive fuction causes gui freeze.
+                Receive(client);
                 //receiveDone.WaitOne();
 
                 // Write the response to the console.  
@@ -179,7 +182,9 @@ namespace client
             {
                 // Create the state object.  
                 StateObject state = new StateObject();
-                state.workSocket = client;
+                
+                //Introduce new async threading
+                state.workSocket = await client;
 
                 // Begin receiving the data from the remote device.  
                 client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
