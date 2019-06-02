@@ -28,12 +28,12 @@ namespace client
         private const int port = 11002;
 
         // ManualResetEvent instances signal completion.  
-        private static ManualResetEvent connectDone =
+        /*private static ManualResetEvent connectDone =
             new ManualResetEvent(false);
         private static ManualResetEvent sendDone =
             new ManualResetEvent(false);
         private static ManualResetEvent receiveDone =
-            new ManualResetEvent(false);
+            new ManualResetEvent(false);*/
 
         // The response from the remote device.  
         public static String response = String.Empty;
@@ -62,7 +62,7 @@ namespace client
             Console.WriteLine(remoteEP.AddressFamily);
             client.BeginConnect(remoteEP,
                         new AsyncCallback(ConnectCallback), client);
-            connectDone.WaitOne();
+            //connectDone.WaitOne();
             this.timer1.Start();
         }
 
@@ -136,7 +136,7 @@ namespace client
                 // Send test data to the remote device.  
                 Send(client, Newtonsoft.Json.JsonConvert.SerializeObject(new { x = x.ToString(), y = y.ToString(), left_click = left_click.ToString(), right_click = right_click.ToString(), drag = drag.ToString(), key = key }));
                 
-                sendDone.WaitOne();
+                //sendDone.WaitOne();
 
                 // Receive the response from the remote device.  
                 
@@ -168,7 +168,7 @@ namespace client
                     client.RemoteEndPoint.ToString());
 
                 // Signal that the connection has been made.  
-                connectDone.Set();
+                //connectDone.Set();
             }
             catch (Exception e)
             {
@@ -184,7 +184,7 @@ namespace client
                 StateObject state = new StateObject();
                 
                 //Introduce new async threading
-                state.workSocket = await client;
+                state.workSocket = client;
 
                 // Begin receiving the data from the remote device.  
                 client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
@@ -225,7 +225,7 @@ namespace client
                         response = state.sb.ToString();
                     }
                     // Signal that all bytes have been received.  
-                    receiveDone.Set();
+                    //receiveDone.Set();
                 }
             }
             catch (Exception e)
@@ -256,7 +256,7 @@ namespace client
                 Console.WriteLine("Sent {0} bytes to server.", bytesSent);
 
                 // Signal that all bytes have been sent.  
-                sendDone.Set();
+                //sendDone.Set();
             }
             catch (Exception e)
             {
