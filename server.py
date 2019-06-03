@@ -28,6 +28,8 @@ def handle_client(client, client_address):
             msg = client.recv(bufsiz)
             msg = (msg).decode("utf8")
             data = json.loads(msg)
+
+            broadcast(bytes("{} has connected.".format(client_address), "utf8"))
             
             print(str(client_address)+": "+str(data['left_click']))
             print(bool(data['left_click']))

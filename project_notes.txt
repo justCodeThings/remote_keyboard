@@ -1,1 +1,0 @@
-ManualResetEvent class methods in client/form1.cs freeze the gui due to no response from the server.  A response is sent by server.py but is not received by the program.  Solve this issue.
