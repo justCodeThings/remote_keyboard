@@ -252,7 +252,9 @@ namespace client
     // State object for receiving data from remote device.  
     public class StateObject
     {
-        // Client socket.  
+        // Client socket.
+        
+        //What is this? vvv
         public Socket workSocket = null;
         // Size of receive buffer.  
         public const int BufferSize = 1024;
