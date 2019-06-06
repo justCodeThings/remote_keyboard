@@ -22,7 +22,7 @@ namespace client
         Stopwatch right_click_watch = new Stopwatch();
 
         // The port number for the remote device.  
-        private const int port = 11002;
+        private const int port = 11000;
 
         // ManualResetEvent instances signal completion.  
         private static ManualResetEvent connectDone =
@@ -192,6 +192,7 @@ namespace client
 
                 // Read data from the remote device.  
                 int bytesRead = client.EndReceive(ar);
+                Console.WriteLine("Received: {0}", bytesRead);
 
                 if (bytesRead > 0)
                 {
