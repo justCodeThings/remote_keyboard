@@ -5,13 +5,15 @@ import pyautogui
 
 server = socket(AF_INET, SOCK_STREAM)
 host = ''
-port = 11002
+port = 11001
 bufsiz = 1024
 server.bind((host, port))
 server.listen(5)
 clients = {}
 addresses = {}
 data = {}
+width, height = pyautogui.size()
+pyautogui.FAILSAFE = False
 
 def accept_incoming_connections():
     while True:
@@ -19,7 +21,6 @@ def accept_incoming_connections():
         addresses[client_address] = client_address
         clients[client] = client
         print("{} has connected.".format(client_address))
-        broadcast(bytes("{} has connected.".format(client_address), "utf8"))
         Thread(target=handle_client, args=(client, client_address)).start()
 
 def handle_client(client, client_address):
@@ -29,7 +30,7 @@ def handle_client(client, client_address):
             msg = (msg).decode("utf8")
             data = json.loads(msg)
 
-            broadcast(bytes("{} has connected.".format(client_address), "utf8"))
+            broadcast(bytes("{},{}".format(width, height), "utf8"))
             
             print(str(client_address)+": "+str(data['left_click']))
             print(bool(data['left_click']))
