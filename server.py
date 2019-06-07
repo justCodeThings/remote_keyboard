@@ -2,10 +2,11 @@ from socket import AF_INET, socket, SOCK_STREAM
 from threading import Thread
 import json
 import pyautogui
+import time
 
 server = socket(AF_INET, SOCK_STREAM)
 host = ''
-port = 11001
+port = 11003
 bufsiz = 1024
 server.bind((host, port))
 server.listen(5)
@@ -25,30 +26,37 @@ def accept_incoming_connections():
 
 def handle_client(client, client_address):
     while True:
+        
         try:
             msg = client.recv(bufsiz)
             msg = (msg).decode("utf8")
             data = json.loads(msg)
 
+            x = int(data['x'])
+            y = int(data['y'])
+            left_click = data['left_click']
+            right_click = data['right_click']
+
             broadcast(bytes("{},{}".format(width, height), "utf8"))
             
-            print(str(client_address)+": "+str(data['left_click']))
+            print(str(client_address)+" drag: "+str(data['drag']))
             print(bool(data['left_click']))
 
-            pyautogui.moveTo(int(data['x']), int(data['y']))
+            pyautogui.moveTo(x,y)
 
-            if(data['left_click'] == 'True'):
-                pyautogui.click(button = "left")
+            mouseClick(left_click)
                 
             if(data['right_click'] == 'True'):
                 pyautogui.click(button= "right")
                 
             '''if(data['key'] != 'false'):
                 pyautogui.press(data['key'])'''
+            timeout = time.time()
                 
         except Exception as e:
-            print(e)
-            #delete_client(client, client_address)
+            #print(e)
+            if time.time()- timeout > 1:
+                delete_client(client, client_address)
             #break
 
 def delete_client(client, client_address):
@@ -64,6 +72,17 @@ def delete_client(client, client_address):
 def broadcast(msg, prefix=""):
         for sock in clients:
             sock.send(bytes(prefix, "utf8")+msg)
+
+def mouseClick(click):
+    while click == 'True':
+        drag = time.time()
+        if time.time() - drag > 1:
+            if left_click == 'False':
+                pyautogui.click(button = "left")
+                left_click = 'False'
+            else:
+                pyautogui.dragTo(x, y)
+            
 
 if __name__ == "__main__":
     print("waiting for connections...")
