@@ -18,11 +18,16 @@ namespace client
         Boolean drag;
         Boolean mouse_up = true;
 
+
         Stopwatch left_click_watch = new Stopwatch();
         Stopwatch right_click_watch = new Stopwatch();
 
+        // Remote screen dimensions
+        public static float width;
+        public static float height;
+
         // The port number for the remote device.  
-        private const int port = 11000;
+        private const int port = 11001;
 
         // ManualResetEvent instances signal completion.  
         private static ManualResetEvent connectDone =
@@ -59,8 +64,23 @@ namespace client
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
-            x = e.X;
-            y = e.Y;
+            String[] data = response.Split(',');
+            if (data.Length == 2)
+            {
+                String Width = data[0];
+                String Height = data[1];
+                width = Convert.ToInt32(Width);
+                height = Convert.ToInt32(Height);
+                Console.WriteLine("x:{0}, y:{1}",x,y);
+                float scale_x = width / Size.Width;
+                float scale_y = height / Size.Height;
+                int mouse_x = e.X;
+                int mouse_y = e.Y;
+                float ftMouse_x = mouse_x;
+                float ftMouse_y = mouse_y;
+                x = Convert.ToInt32(ftMouse_x * scale_x);
+                y = Convert.ToInt32(ftMouse_y * scale_y);
+            }
         }
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
@@ -125,7 +145,6 @@ namespace client
 
                 // Receive the response from the remote device.  
                 
-                //Receive fuction causes gui freeze.
                 Receive(client);
                 receiveDone.WaitOne();
 
@@ -192,27 +211,17 @@ namespace client
 
                 // Read data from the remote device.  
                 int bytesRead = client.EndReceive(ar);
-                Console.WriteLine("Received: {0}", bytesRead);
 
-                if (bytesRead > 0)
-                {
-                    // There might be more data, so store the data received so far.  
-                    state.sb.Append(Encoding.UTF8.GetString(state.buffer, 0, bytesRead));
+                // Decode data from UTF8
+                state.sb.Append(Encoding.UTF8.GetString(state.buffer, 0, bytesRead));
+                client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReceiveCallback), state);
+                response = state.sb.ToString();
 
-                    // Get the rest of the data.  
-                    client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReceiveCallback), state);
-                }
-                else
-                {
-                    // All the data has arrived; put it in response.  
-                    if (state.sb.Length > 1)
-                    {
-                        response = state.sb.ToString();
-                    }
-                    // Signal that all bytes have been received.  
-                    receiveDone.Set();
-                }
+                // Prevent repeat messages in string by clearing StringBuilder
+                state.sb.Clear();
+
+                //Signal that the response was received
+                receiveDone.Set();
             }
             catch (Exception e)
             {
@@ -258,7 +267,7 @@ namespace client
         //What is this? vvv
         public Socket workSocket = null;
         // Size of receive buffer.  
-        public const int BufferSize = 1024;
+        public const int BufferSize = 255;
         // Receive buffer.  
         public byte[] buffer = new byte[BufferSize];
         // Received data string.  
