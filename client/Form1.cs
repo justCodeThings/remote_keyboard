@@ -27,7 +27,7 @@ namespace client
         public static float height;
 
         // The port number for the remote device.  
-        private const int port = 11001;
+        private const int port = 11003;
 
         // ManualResetEvent instances signal completion.  
         private static ManualResetEvent connectDone =
@@ -55,6 +55,10 @@ namespace client
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            WindowState = FormWindowState.Normal;
+            FormBorderStyle = FormBorderStyle.None;
+            Bounds = Screen.PrimaryScreen.Bounds;
+
             // Connect to the remote endpoint.  
             client.BeginConnect(remoteEP,
                         new AsyncCallback(ConnectCallback), client);
@@ -110,21 +114,17 @@ namespace client
             this.textBox1.Text = (x.ToString()+ y.ToString()+ left_click.ToString()+ right_click.ToString()+ key.ToString());
 
             // Determine whether the mouse is single clicked or drag
-            if (left_click_watch.ElapsedMilliseconds > 250)
+            if (left_click_watch.ElapsedMilliseconds > this.timer1.Interval)
             {
                 left_click = false;
-                if (!mouse_up)
-                {
-                    left_click_watch.Stop();
-                    drag = true;
-                }
+                left_click_watch.Stop();
             }
 
-            if (right_click_watch.ElapsedMilliseconds > 250)
+            if (right_click_watch.ElapsedMilliseconds > this.timer1.Interval)
             {
                 right_click = false;
                 right_click_watch.Stop();
-            }       
+            }  
         }
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
